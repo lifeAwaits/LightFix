@@ -79,6 +79,8 @@ namespace UnityEngine.Rendering.Universal.Internal
             public static int _LightFlags = Shader.PropertyToID("_LightFlags");
             public static int _ShadowLightIndex = Shader.PropertyToID("_ShadowLightIndex");
             public static int _LightLayerMask = Shader.PropertyToID("_LightLayerMask");
+            public static int _CurrentBoundsCenter = Shader.PropertyToID("_CurrentBoundsCenter");
+            public static int _CurrentBoundsExtents = Shader.PropertyToID("_CurrentBoundsExtents");
             public static int _CookieLightIndex = Shader.PropertyToID("_CookieLightIndex");
         }
 
@@ -866,6 +868,14 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 var additionalLightData = light.GetUniversalAdditionalLightData();
                 uint lightLayerMask = RenderingLayerUtils.ToValidRenderingLayers(additionalLightData.renderingLayers);
+                if(additionalLightData.enableFixLightOverFlow)
+                {
+                    cmd.EnableShaderKeyword(ShaderKeywordStrings._ENABLE_FIX_LIGHT);
+                }else
+                {
+                    cmd.DisableShaderKeyword(ShaderKeywordStrings._ENABLE_FIX_LIGHT);
+                }
+
 
                 int lightFlags = 0;
                 if (light.bakingOutput.lightmapBakeType == LightmapBakeType.Mixed)
@@ -893,6 +903,8 @@ namespace UnityEngine.Rendering.Universal.Internal
                 cmd.SetGlobalInt(ShaderConstants._LightFlags, lightFlags);
                 cmd.SetGlobalInt(ShaderConstants._ShadowLightIndex, shadowLightIndex);
                 cmd.SetGlobalInt(ShaderConstants._LightLayerMask, (int)lightLayerMask);
+                cmd.SetGlobalVector(ShaderConstants._CurrentBoundsCenter, additionalLightData.currentBounds.center);
+                cmd.SetGlobalVector(ShaderConstants._CurrentBoundsExtents, additionalLightData.currentBounds.extents);
 
                 // Stencil pass.
                 cmd.DrawMesh(m_SphereMesh, transformMatrix, m_StencilDeferredMaterial, 0, m_StencilDeferredPasses[(int)StencilDeferredPasses.StencilVolume]);
@@ -903,6 +915,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             }
 
             cmd.DisableShaderKeyword(ShaderKeywordStrings._POINT);
+            cmd.DisableShaderKeyword(ShaderKeywordStrings._ENABLE_FIX_LIGHT);
         }
 
         void RenderStencilSpotLights(CommandBuffer cmd, ref RenderingData renderingData, NativeArray<VisibleLight> visibleLights)

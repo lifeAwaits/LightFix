@@ -470,6 +470,9 @@ namespace UnityEngine.Rendering.Universal
         // Additional lights settings
         [SerializeField] LightRenderingMode m_AdditionalLightsRenderingMode = LightRenderingMode.PerPixel;
         [SerializeField] int m_AdditionalLightsPerObjectLimit = 4;
+        [SerializeField] int m_MaxVisibleAdditionalLightsMobileShaderLevelLessThan45 = 32;
+        [SerializeField] int m_MaxVisibleAdditionalLightsMobile = 64;
+        [SerializeField] int m_MaxVisibleAdditionalLightsNonMobile = 256;    
         [SerializeField] bool m_AdditionalLightShadowsSupported = false;
         [SerializeField] ShadowResolution m_AdditionalLightsShadowmapResolution = ShadowResolution._2048;
 
@@ -1191,6 +1194,21 @@ namespace UnityEngine.Rendering.Universal
         {
             get { return m_AdditionalLightsPerObjectLimit; }
             set { m_AdditionalLightsPerObjectLimit = ValidatePerObjectLights(value); }
+        }
+
+        public int maxVisibleAdditionalLightsMobileShaderLevelLessThan45
+        {
+            get { return m_MaxVisibleAdditionalLightsMobileShaderLevelLessThan45; }
+        }
+
+        public int maxVisibleAdditionalLightsMobile
+        {
+            get { return m_MaxVisibleAdditionalLightsMobile; }
+        }
+
+        public int maxVisibleAdditionalLightsNonMobile
+        {
+            get { return m_MaxVisibleAdditionalLightsNonMobile; }
         }
 
         /// <summary>

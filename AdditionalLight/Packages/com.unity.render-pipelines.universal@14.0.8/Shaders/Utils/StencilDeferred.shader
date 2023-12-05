@@ -100,6 +100,8 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
         output.screenUV.xy = output.screenUV.xy * 0.5 + 0.5 * output.screenUV.z;
         #endif
 
+
+
         return output;
     }
 
@@ -150,6 +152,8 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
     int _ShadowLightIndex;
     uint _LightLayerMask;
     int _CookieLightIndex;
+    float3 _CurrentBoundsCenter;
+    float3 _CurrentBoundsExtents;
 
     half4 FragWhite(Varyings input) : SV_Target
     {
@@ -243,15 +247,45 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
 
         float2 screen_uv = (input.screenUV.xy / input.screenUV.z);
 
-#if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-        float2 undistorted_screen_uv = screen_uv;
-        screen_uv = input.positionCS.xy * _ScreenSize.zw;
-#endif
+        #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
+            float2 undistorted_screen_uv = screen_uv;
+            screen_uv = input.positionCS.xy * _ScreenSize.zw;
+        #endif
 
         half4 shadowMask = 1.0;
 
         #if _RENDER_PASS_ENABLED
         float d        = LOAD_FRAMEBUFFER_INPUT(GBUFFER3, input.positionCS.xy).x;
+        #else
+        float d        = SAMPLE_TEXTURE2D_X_LOD(_CameraDepthTexture, my_point_clamp_sampler, screen_uv, 0).x;
+        #endif
+
+        #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
+        input.positionCS.xy = undistorted_screen_uv * _ScreenSize.xy;
+        #endif
+
+        #if defined(USING_STEREO_MATRICES)
+        int eyeIndex = unity_StereoEyeIndex;
+        #else
+        int eyeIndex = 0;
+        #endif
+        float4 posWS = mul(_ScreenToWorld[eyeIndex], float4(input.positionCS.xy, d, 1.0));
+        posWS.xyz *= rcp(posWS.w);
+
+#ifdef _ENABLE_FIX_LIGHT
+    float distanceSq = 0.0;
+    float3 d0 = max(0, abs(_CurrentBoundsCenter - posWS) - (_CurrentBoundsExtents - float3(1.0,1.0,1.0)));
+    distanceSq = dot(d0, d0);
+
+    if(distanceSq >= 1)
+    {
+        return 0.0;
+    }
+#endif
+
+
+        #if _RENDER_PASS_ENABLED
+        // float d        = LOAD_FRAMEBUFFER_INPUT(GBUFFER3, input.positionCS.xy).x;
         half4 gbuffer0 = LOAD_FRAMEBUFFER_INPUT(GBUFFER0, input.positionCS.xy);
         half4 gbuffer1 = LOAD_FRAMEBUFFER_INPUT(GBUFFER1, input.positionCS.xy);
         half4 gbuffer2 = LOAD_FRAMEBUFFER_INPUT(GBUFFER2, input.positionCS.xy);
@@ -261,7 +295,7 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
         #else
         // Using SAMPLE_TEXTURE2D is faster than using LOAD_TEXTURE2D on iOS platforms (5% faster shader).
         // Possible reason: HLSLcc upcasts Load() operation to float, which doesn't happen for Sample()?
-        float d        = SAMPLE_TEXTURE2D_X_LOD(_CameraDepthTexture, my_point_clamp_sampler, screen_uv, 0).x; // raw depth value has UNITY_REVERSED_Z applied on most platforms.
+        // float d        = SAMPLE_TEXTURE2D_X_LOD(_CameraDepthTexture, my_point_clamp_sampler, screen_uv, 0).x; // raw depth value has UNITY_REVERSED_Z applied on most platforms.
         half4 gbuffer0 = SAMPLE_TEXTURE2D_X_LOD(_GBuffer0, my_point_clamp_sampler, screen_uv, 0);
         half4 gbuffer1 = SAMPLE_TEXTURE2D_X_LOD(_GBuffer1, my_point_clamp_sampler, screen_uv, 0);
         half4 gbuffer2 = SAMPLE_TEXTURE2D_X_LOD(_GBuffer2, my_point_clamp_sampler, screen_uv, 0);
@@ -282,17 +316,7 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
             return half4(color, alpha); // Cannot discard because stencil must be updated.
         #endif
 
-        #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-        input.positionCS.xy = undistorted_screen_uv * _ScreenSize.xy;
-        #endif
 
-        #if defined(USING_STEREO_MATRICES)
-        int eyeIndex = unity_StereoEyeIndex;
-        #else
-        int eyeIndex = 0;
-        #endif
-        float4 posWS = mul(_ScreenToWorld[eyeIndex], float4(input.positionCS.xy, d, 1.0));
-        posWS.xyz *= rcp(posWS.w);
 
         Light unityLight = GetStencilLight(posWS.xyz, screen_uv, shadowMask, materialFlags);
 
@@ -336,7 +360,9 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
             // TODO: if !defined(_SPECGLOSSMAP) && !defined(_SPECULAR_COLOR), force specularColor to 0 in gbuffer code
             color = diffuseColor * surfaceData.albedo + specularColor;
         #endif
-
+#ifdef _ENABLE_FIX_LIGHT
+        color = lerp(color , 0 , distanceSq);
+#endif
         return half4(color, alpha);
     }
 
@@ -439,6 +465,7 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
             #pragma target 4.5
 
             #pragma multi_compile _POINT _SPOT
+            #pragma multi_compile _ _ENABLE_FIX_LIGHT
             #pragma multi_compile_fragment _LIT
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT

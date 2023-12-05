@@ -65,6 +65,10 @@ namespace UnityEditor.Rendering.Universal
             public static GUIContent additionalLightsCookieResolution = EditorGUIUtility.TrTextContent("Cookie Atlas Resolution", "All additional lights are packed into a single cookie atlas. This setting controls the atlas size.");
             public static GUIContent additionalLightsCookieFormat = EditorGUIUtility.TrTextContent("Cookie Atlas Format", "All additional lights are packed into a single cookie atlas. This setting controls the atlas format.");
 
+            public static GUIContent maxVisibleAdditionalLightsMobileShaderLevelLessThan45 = EditorGUIUtility.TrTextContent("maxVisibleAdditionalLightsMobileShaderLevelLessThan45");
+            public static GUIContent maxVisibleAdditionalLightsMobile = EditorGUIUtility.TrTextContent("maxVisibleAdditionalLightsMobile");
+            public static GUIContent maxVisibleAdditionalLightsNonMobile = EditorGUIUtility.TrTextContent("maxVisibleAdditionalLightsNonMobile");
+
             // Reflection Probes
             public static GUIContent reflectionProbesSettingsText = EditorGUIUtility.TrTextContent("Reflection Probes");
             public static GUIContent reflectionProbeBlendingText = EditorGUIUtility.TrTextContent("Probe Blending", "If enabled smooth transitions will be created between reflection probes.");

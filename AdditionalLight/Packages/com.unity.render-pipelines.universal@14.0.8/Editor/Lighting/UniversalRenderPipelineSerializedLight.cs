@@ -26,6 +26,8 @@ namespace UnityEditor.Rendering.Universal
 
         // Light layers related
         public SerializedProperty renderingLayers { get; }
+
+        public SerializedProperty enableFixLightOverFlow { get; }
         public SerializedProperty customShadowLayers { get; }
         public SerializedProperty shadowRenderingLayers { get; }
 
@@ -68,6 +70,7 @@ namespace UnityEditor.Rendering.Universal
             lightCookieOffsetProp = serializedAdditionalDataObject.FindProperty("m_LightCookieOffset");
 
             renderingLayers = serializedAdditionalDataObject.FindProperty("m_RenderingLayers");
+            enableFixLightOverFlow = serializedAdditionalDataObject.FindProperty("m_EnableFixLightOverFlow");
             customShadowLayers = serializedAdditionalDataObject.FindProperty("m_CustomShadowLayers");
             shadowRenderingLayers = serializedAdditionalDataObject.FindProperty("m_ShadowRenderingLayers");
 

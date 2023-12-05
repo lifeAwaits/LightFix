@@ -1117,6 +1117,9 @@ namespace UnityEngine.Rendering.Universal
         /// <summary> Keyword used for Point lights. </summary>
         public const string _POINT = "_POINT";
 
+        /// <summary> Keyword used for  lights. </summary>
+        public const string _ENABLE_FIX_LIGHT = "_ENABLE_FIX_LIGHT";
+
         /// <summary> Keyword used for stencils when rendering with the Deferred rendering path. </summary>
         public const string _DEFERRED_STENCIL = "_DEFERRED_STENCIL";
 

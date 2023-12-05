@@ -14,7 +14,7 @@
 #if defined(SHADER_API_MOBILE) && (defined(SHADER_API_GLES) || defined(SHADER_API_GLES30))
     #define MAX_VISIBLE_LIGHTS 16
 #elif defined(SHADER_API_MOBILE) || (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3) // Workaround because SHADER_API_GLCORE is also defined when SHADER_API_SWITCH is
-    #define MAX_VISIBLE_LIGHTS 32
+    #define MAX_VISIBLE_LIGHTS 64
 #else
     #define MAX_VISIBLE_LIGHTS 256
 #endif

@@ -149,6 +149,20 @@ namespace UnityEngine.Rendering.Universal
             set { m_RenderingLayers = value; }
         }
 
+        [SerializeField] bool m_EnableFixLightOverFlow = false;
+        public bool enableFixLightOverFlow
+        {
+            get { return m_EnableFixLightOverFlow; }
+            set { m_EnableFixLightOverFlow = value; }
+        }
+
+        [SerializeField] Bounds m_CurrentBounds = new Bounds();
+        public Bounds currentBounds
+        {
+            get { return m_CurrentBounds; }
+            set { m_CurrentBounds = value; }
+        }
+
         [SerializeField] bool m_CustomShadowLayers = false;
 
         /// <summary>
@@ -220,6 +234,32 @@ namespace UnityEngine.Rendering.Universal
         /// <inheritdoc/>
         public void OnBeforeSerialize()
         {
+            bool isBoxCollider = TryGetComponent<BoxCollider>(out var boxCollider);
+            bool isLight = TryGetComponent<Light>(out var light);
+            if(m_EnableFixLightOverFlow)
+            {
+                if(!isBoxCollider)
+                {
+                    boxCollider = gameObject.AddComponent<BoxCollider>();
+                    if(isLight)
+                    {
+                        float size = light.range * 2.0f;
+                        boxCollider.size = new Vector3(size,size,size);
+                    }
+                }
+                if(boxCollider != null)
+                {
+                    m_CurrentBounds = boxCollider.bounds;
+                }
+
+            }else
+            {
+                if(isBoxCollider && boxCollider != null)
+                {
+                    DestroyImmediate(boxCollider);
+                }
+
+            }
         }
 
         /// <inheritdoc/>
@@ -240,6 +280,7 @@ namespace UnityEngine.Rendering.Universal
                 m_SoftShadowQuality = (SoftShadowQuality)(Math.Clamp((int)m_SoftShadowQuality + 1, 0, (int)SoftShadowQuality.High));
                 m_Version = 3;
             }
+            
         }
     }
 }

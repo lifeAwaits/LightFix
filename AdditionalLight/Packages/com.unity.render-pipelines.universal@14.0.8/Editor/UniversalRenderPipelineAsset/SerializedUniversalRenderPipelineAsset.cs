@@ -30,6 +30,10 @@ namespace UnityEditor.Rendering.Universal
 
         public SerializedProperty shEvalModeProp { get; }
 
+        public SerializedProperty maxVisibleAdditionalLightsMobileShaderLevelLessThan45Prop { get; }
+        public SerializedProperty maxVisibleAdditionalLightsMobileProp { get; }
+        public SerializedProperty maxVisibleAdditionalLightsNonMobileProp { get; }
+
         public SerializedProperty additionalLightsRenderingModeProp { get; }
         public SerializedProperty additionalLightsPerObjectLimitProp { get; }
         public SerializedProperty additionalLightShadowsSupportedProp { get; }
@@ -109,6 +113,10 @@ namespace UnityEditor.Rendering.Universal
             additionalLightsPerObjectLimitProp = serializedObject.FindProperty("m_AdditionalLightsPerObjectLimit");
             additionalLightShadowsSupportedProp = serializedObject.FindProperty("m_AdditionalLightShadowsSupported");
             additionalLightShadowmapResolutionProp = serializedObject.FindProperty("m_AdditionalLightsShadowmapResolution");
+
+            maxVisibleAdditionalLightsMobileShaderLevelLessThan45Prop = serializedObject.FindProperty("m_MaxVisibleAdditionalLightsMobileShaderLevelLessThan45");
+            maxVisibleAdditionalLightsMobileProp = serializedObject.FindProperty("m_MaxVisibleAdditionalLightsMobile");
+            maxVisibleAdditionalLightsNonMobileProp = serializedObject.FindProperty("m_MaxVisibleAdditionalLightsNonMobile");
 
             additionalLightsShadowResolutionTierLowProp = serializedObject.FindProperty("m_AdditionalLightsShadowResolutionTierLow");
             additionalLightsShadowResolutionTierMediumProp = serializedObject.FindProperty("m_AdditionalLightsShadowResolutionTierMedium");

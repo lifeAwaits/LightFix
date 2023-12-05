@@ -259,6 +259,10 @@ namespace UnityEditor.Rendering.Universal
             EditorGUILayout.PropertyField(serialized.reflectionProbeBlendingProp, Styles.reflectionProbeBlendingText);
             EditorGUILayout.PropertyField(serialized.reflectionProbeBoxProjectionProp, Styles.reflectionProbeBoxProjectionText);
             EditorGUI.indentLevel--;
+
+            EditorGUILayout.PropertyField(serialized.maxVisibleAdditionalLightsMobileShaderLevelLessThan45Prop, Styles.maxVisibleAdditionalLightsMobileShaderLevelLessThan45);
+            EditorGUILayout.PropertyField(serialized.maxVisibleAdditionalLightsMobileProp, Styles.maxVisibleAdditionalLightsMobile);
+            EditorGUILayout.PropertyField(serialized.maxVisibleAdditionalLightsNonMobileProp, Styles.maxVisibleAdditionalLightsNonMobile);
         }
 
         static void DrawLightingAdditional(SerializedUniversalRenderPipelineAsset serialized, Editor ownerEditor)
