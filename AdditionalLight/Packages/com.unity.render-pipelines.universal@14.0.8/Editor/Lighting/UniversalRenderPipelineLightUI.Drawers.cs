@@ -265,6 +265,11 @@ namespace UnityEditor.Rendering.Universal
             }
             
             EditorGUILayout.PropertyField(serializedLight.enableFixLightOverFlow, Styles.EnableFixLightOverFlow);
+            if(serializedLight.enableFixLightOverFlow.boolValue)
+            {
+                EditorGUILayout.PropertyField(serializedLight.enableDebugMode, Styles.EnableDebugMode);
+            }
+
             serializedLight.settings.DrawShadowsType();
 
             if (serializedLight.settings.shadowsType.hasMultipleDifferentValues)

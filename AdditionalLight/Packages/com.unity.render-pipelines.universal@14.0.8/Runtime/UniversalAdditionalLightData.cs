@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace UnityEngine.Rendering.Universal
 {
@@ -156,12 +157,33 @@ namespace UnityEngine.Rendering.Universal
             set { m_EnableFixLightOverFlow = value; }
         }
 
+        [SerializeField] bool m_EnableDebugMode = true;
+        public bool enableDebugMode
+        {
+            get { return m_EnableDebugMode; }
+            set { m_EnableDebugMode = value; }
+        }
+
         [SerializeField] Bounds m_CurrentBounds = new Bounds();
         public Bounds currentBounds
         {
             get { return m_CurrentBounds; }
             set { m_CurrentBounds = value; }
         }
+
+        // [SerializeField] Vector4[] m_PlaneNormals = new Vector4[6];
+        // public Vector4[] planeNormals
+        // {
+        //     get { return m_PlaneNormals; }
+        //     set { m_PlaneNormals = value; }
+        // }
+        
+        // [SerializeField] Vector4[] m_PlanePoints = new Vector4[2];
+        // public Vector4[] planePoints
+        // {
+        //     get { return m_PlanePoints; }
+        //     set { m_PlanePoints = value; }
+        // }
 
         [SerializeField] bool m_CustomShadowLayers = false;
 
@@ -231,6 +253,9 @@ namespace UnityEngine.Rendering.Universal
         }
         [SerializeField] private SoftShadowQuality m_SoftShadowQuality = SoftShadowQuality.UsePipelineSettings;
 
+        [SerializeField]private Vector3 m_BoundCenter;
+        [SerializeField] bool m_IsFirstTime = true;
+
         /// <inheritdoc/>
         public void OnBeforeSerialize()
         {
@@ -238,18 +263,34 @@ namespace UnityEngine.Rendering.Universal
             bool isLight = TryGetComponent<Light>(out var light);
             if(m_EnableFixLightOverFlow)
             {
-                if(!isBoxCollider)
+                if(!isBoxCollider && m_EnableDebugMode)
                 {
                     boxCollider = gameObject.AddComponent<BoxCollider>();
                     if(isLight)
                     {
-                        float size = light.range * 2.0f;
-                        boxCollider.size = new Vector3(size,size,size);
+                        if(m_IsFirstTime)
+                        {
+                            float size = light.range * 2.0f;
+                            boxCollider.size = new Vector3(size , size , size);
+                            m_IsFirstTime = false;
+                        }else
+                        {
+                            boxCollider.center = m_CurrentBounds.center - transform.position;
+                            boxCollider.size = m_CurrentBounds.size;
+                        }
                     }
                 }
                 if(boxCollider != null)
                 {
                     m_CurrentBounds = boxCollider.bounds;
+                    m_BoundCenter = boxCollider.center;
+                }
+
+                m_CurrentBounds.center = m_BoundCenter + transform.position;
+                
+                if(isBoxCollider && boxCollider != null && !m_EnableDebugMode)
+                {
+                    DestroyImmediate(boxCollider);
                 }
 
             }else
@@ -260,6 +301,34 @@ namespace UnityEngine.Rendering.Universal
                 }
 
             }
+
+            // List<Vector3> poses = new List<Vector3>();
+            // for(int i = 0; i < transform.childCount; i++) 
+            // {
+            //     poses.Add(transform.GetChild(i).position);
+            // }
+
+            // if(poses !=null && poses.Count >=3)
+            // {
+            //     Plane plane0 = new Plane(poses[0] ,poses[1] ,poses[2]);
+            //     Plane plane1 = new Plane(poses[0] ,poses[1] ,poses[3]);
+            //     Plane plane2 = new Plane(poses[0] ,poses[2] ,poses[3]);
+            //     Plane plane3 = new Plane(poses[4] ,poses[5] ,poses[6]);
+            //     Plane plane4 = new Plane(poses[4] ,poses[5] ,poses[7]);
+            //     Plane plane5 = new Plane(poses[4] ,poses[7] ,poses[6]);
+
+            //     m_PlaneNormals[0] = plane0.normal;
+            //     m_PlaneNormals[1] = plane1.normal;
+            //     m_PlaneNormals[2] = plane2.normal;
+            //     m_PlaneNormals[3] = plane3.normal;
+            //     m_PlaneNormals[4] = plane4.normal;
+            //     m_PlaneNormals[5] = plane5.normal;
+
+            //     m_PlanePoints[0] = poses[0];
+            //     m_PlanePoints[1] = poses[4];
+            // }
+
+
         }
 
         /// <inheritdoc/>

@@ -49,6 +49,7 @@ namespace UnityEditor.Rendering.Universal
 
             public static GUIContent SoftShadowQuality = EditorGUIUtility.TrTextContent("Soft Shadows Quality", "Controls the filtering quality of soft shadows. Higher quality has lower performance.");
             public static GUIContent EnableFixLightOverFlow = EditorGUIUtility.TrTextContent("Enable Fix Light Over Flow", "Enable the function to repair light leaks.");
+             public static GUIContent EnableDebugMode = EditorGUIUtility.TrTextContent("Enable Debug Mode", "Enable Debug Mode.");
             // Bias (default or custom)
             public static GUIContent shadowBias = EditorGUIUtility.TrTextContent("Bias", "Select if the Bias should use the settings from the Pipeline Asset or Custom settings.");
             public static int[] optionDefaultValues = { 0, 1 };

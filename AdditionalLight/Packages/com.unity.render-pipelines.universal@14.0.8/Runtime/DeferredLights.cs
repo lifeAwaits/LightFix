@@ -81,6 +81,8 @@ namespace UnityEngine.Rendering.Universal.Internal
             public static int _LightLayerMask = Shader.PropertyToID("_LightLayerMask");
             public static int _CurrentBoundsCenter = Shader.PropertyToID("_CurrentBoundsCenter");
             public static int _CurrentBoundsExtents = Shader.PropertyToID("_CurrentBoundsExtents");
+            public static int _PlaneNormals = Shader.PropertyToID("_PlaneNormals");
+            public static int _PlanePoints = Shader.PropertyToID("_PlanePoints");
             public static int _CookieLightIndex = Shader.PropertyToID("_CookieLightIndex");
         }
 
@@ -868,6 +870,8 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 var additionalLightData = light.GetUniversalAdditionalLightData();
                 uint lightLayerMask = RenderingLayerUtils.ToValidRenderingLayers(additionalLightData.renderingLayers);
+                // Vector4[] planeNormals = additionalLightData.planeNormals;
+                // Vector4[] planePoints = additionalLightData.planePoints;
                 if(additionalLightData.enableFixLightOverFlow)
                 {
                     cmd.EnableShaderKeyword(ShaderKeywordStrings._ENABLE_FIX_LIGHT);
@@ -905,6 +909,8 @@ namespace UnityEngine.Rendering.Universal.Internal
                 cmd.SetGlobalInt(ShaderConstants._LightLayerMask, (int)lightLayerMask);
                 cmd.SetGlobalVector(ShaderConstants._CurrentBoundsCenter, additionalLightData.currentBounds.center);
                 cmd.SetGlobalVector(ShaderConstants._CurrentBoundsExtents, additionalLightData.currentBounds.extents);
+                // cmd.SetGlobalVectorArray(ShaderConstants._PlaneNormals, planeNormals);
+                // cmd.SetGlobalVectorArray(ShaderConstants._PlanePoints, planePoints);
 
                 // Stencil pass.
                 cmd.DrawMesh(m_SphereMesh, transformMatrix, m_StencilDeferredMaterial, 0, m_StencilDeferredPasses[(int)StencilDeferredPasses.StencilVolume]);

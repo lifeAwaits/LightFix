@@ -28,6 +28,7 @@ namespace UnityEditor.Rendering.Universal
         public SerializedProperty renderingLayers { get; }
 
         public SerializedProperty enableFixLightOverFlow { get; }
+        public SerializedProperty enableDebugMode { get; }
         public SerializedProperty customShadowLayers { get; }
         public SerializedProperty shadowRenderingLayers { get; }
 
@@ -71,6 +72,7 @@ namespace UnityEditor.Rendering.Universal
 
             renderingLayers = serializedAdditionalDataObject.FindProperty("m_RenderingLayers");
             enableFixLightOverFlow = serializedAdditionalDataObject.FindProperty("m_EnableFixLightOverFlow");
+            enableDebugMode = serializedAdditionalDataObject.FindProperty("m_EnableDebugMode");
             customShadowLayers = serializedAdditionalDataObject.FindProperty("m_CustomShadowLayers");
             shadowRenderingLayers = serializedAdditionalDataObject.FindProperty("m_ShadowRenderingLayers");
 

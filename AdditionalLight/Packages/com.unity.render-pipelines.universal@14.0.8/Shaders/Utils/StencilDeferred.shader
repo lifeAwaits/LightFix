@@ -154,6 +154,8 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
     int _CookieLightIndex;
     float3 _CurrentBoundsCenter;
     float3 _CurrentBoundsExtents;
+    float3 _PlaneNormals[6];
+    float3 _PlanePoints[2];
 
     half4 FragWhite(Varyings input) : SV_Target
     {
@@ -281,6 +283,20 @@ Shader "Hidden/Universal Render Pipeline/StencilDeferred"
     {
         return 0.0;
     }
+    // float3 p0 = normalize(posWS - _PlanePoints[0]);
+    // float3 p1 = normalize(posWS - _PlanePoints[1]);
+    // float plane0 = dot(_PlaneNormals[0] , p0);
+    // float plane1 = dot(_PlaneNormals[1] , p0);
+    // float plane2 = dot(_PlaneNormals[2] , p0);
+    // float plane3 = dot(_PlaneNormals[3] , p1);
+    // float plane4 = dot(_PlaneNormals[4] , p1);
+    // float plane5 = dot(_PlaneNormals[5] , p1);
+    // half inside = plane0 * plane1 * plane2 * plane3 * plane4 * plane5;
+    // if(inside <= 0)
+    // {
+    //    return 0.0;    
+    // }
+
 #endif
 
 
